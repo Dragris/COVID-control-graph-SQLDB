@@ -256,3 +256,160 @@ class App:
             logging.error("{query} raised an error: \n {exception}".format(
                 query=query, exception=exception))
             raise
+
+    def create_infected_relation(self, person_id, strain_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._create_infected_relation, person_id, strain_id
+            )
+            print("Created relation: {0} IS INFECTED BY {1}".format(result[0]['p'], result[0]['s']))
+
+    @staticmethod
+    def _create_infected_relation(tx, person_id, strain_id):
+        query = (
+            "MATCH (p:Person {person_id: $person_id}) "
+            "MATCH (s:Strain {strain_id: $strain_id}) "
+            "CREATE (p)-[:INFECTED_BY]->(s) "
+            "RETURN p, s "
+        )
+
+        result = tx.run(query, person_id=person_id, strain_id=strain_id)
+        try:
+            return [{"p": row["p"]["name"], "s": row["s"]["name"]} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def create_vaccinated_relation(self, person_id, vac_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._create_vaccinated_relation, person_id, vac_id
+            )
+            print("Created relation: {0} IS VACCINATED WITH {1}".format(result[0]['p'], result[0]['v']))
+
+    @staticmethod
+    def _create_vaccinated_relation(tx, person_id, vac_id):
+        query = (
+            "MATCH (p:Person {person_id: $person_id}) "
+            "MATCH (v:Vaccine {vac_id: $vac_id}) "
+            "CREATE (p)-[:VACCCINATED_WITH]->(v) "
+            "RETURN p, v "
+        )
+
+        result = tx.run(query, person_id=person_id, vac_id=vac_id)
+        try:
+            return [{"p": row["p"]["name"], "v": row["v"]["name"]} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def delete_infected_relation(self, person_id, strain_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._delete_infected_relation, person_id, strain_id
+            )
+            print("Deleted relation: {0} IS INFECTED BY {1}".format(result[0]['p'], result[0]['s']))
+
+    @staticmethod
+    def _delete_infected_relation(tx, person_id, strain_id):
+        query = (
+            "MATCH (p:Person {person_id: $person_id}) "
+            "MATCH (s:Strain {strain_id: $strain_id}) "
+            "MATCH (p)-[r]->(s) "
+            "WHERE type(r) = 'INFECTED_BY' "
+            "DETACH DELETE r "
+            "RETURN p, s "
+        )
+
+        result = tx.run(query, person_id=person_id, strain_id=strain_id)
+        try:
+            return [{"p": row["p"]["name"], "s": row["s"]["name"]} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def is_person_infected(self, person_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._is_person_infected, person_id
+            )
+            if result:
+                print("{0} is infected by {1} strains".format(result[0]['p'], result[0]['n_strains']))
+                return True
+            else:
+                name = session.write_transaction(
+                    self._find_person, person_id
+                )
+                print("{0} is not infected".format(name[0]['p']))
+                return False
+
+    @staticmethod
+    def _is_person_infected(tx, person_id):
+        query = (
+            "MATCH (p:Person {person_id: $person_id}) "
+            "MATCH (p)-[r]->() "
+            "WHERE type(r) = 'INFECTED_BY' "
+            "RETURN count(r) as n_strains, p "
+        )
+
+        result = tx.run(query, person_id=person_id)
+        try:
+            return [{"n_strains": row["n_strains"], 'p': row['p']['name']} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def find_person(self, person_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._find_person, person_id
+            )
+            return result[0]['p']
+
+    @staticmethod
+    def _find_person(tx, person_id):
+        query = (
+            "MATCH (p:Person {person_id: $person_id}) "
+            "RETURN p "
+        )
+
+        result = tx.run(query, person_id=person_id)
+        try:
+            return [{'p': row['p']['name']} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def which_strain(self, person_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._which_strain, person_id
+            )
+            ret = []
+            for row in result:
+                print("PERSON with ID {0} is infected by: {1}".format(person_id, row))
+                ret.append(row)
+            return ret
+
+    @staticmethod
+    def _which_strain(tx, person_id):
+        query = (
+            "MATCH (p:Person {person_id: $person_id}) "
+            "MATCH (p)-[r]->(s:Strain) "
+            "WHERE type(r) = 'INFECTED_BY' "
+            "RETURN s.name AS name "
+        )
+        result = tx.run(query, person_id=person_id)
+        try:
+            return [row["name"] for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+
