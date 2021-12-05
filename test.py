@@ -22,7 +22,7 @@ class App:
     def _create_country(tx, country_id, country_name):
         query = (
             "CREATE (c:Country { country_id: $country_id, name: $country_name }) "
-            "RETURN c"
+            "RETURN c "
         )
         result = tx.run(query, country_id=country_id, country_name=country_name)
         try:
@@ -168,6 +168,32 @@ class App:
                 query=query, exception=exception))
             raise
 
+    def change_person_city(self, person_id, new_city_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._change_person_city, person_id, new_city_id
+            )
+            print("Modified relation {0} IS RESIDED BY {1} to {2} IS RESIDED BY {1}".format(result[0]['c1'], result[0]['p'], result[0]['c2']))
+
+    @staticmethod
+    def _change_person_city(tx, person_id, new_city_id):
+        query = (
+            "MATCH (p:Person {person_id: $person_id}) "
+            "MATCH (c2:City {city_id: $new_city_id}) "
+            "MATCH (c1:City) - [r] -> (p) "
+            "DETACH DELETE r "
+            "CREATE (c2) - [:RESIDED_BY] -> (p) "
+            "RETURN p, c1, c2 "
+        )
+
+        result = tx.run(query, person_id=person_id, new_city_id=new_city_id)
+        try:
+            return [{"p": row["p"]["name"], "c1": row["c1"]["name"], "c2": row["c2"]["name"]} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
     def delete_all(self):
         with self.driver.session() as session:
             result = session.write_transaction(
@@ -189,52 +215,44 @@ class App:
                 query=query, exception=exception))
             raise
 
-
-
-
-    def create_friendship(self, person1_name, person2_name):
+    def create_covid_strain(self, strain_id, strain_name):
         with self.driver.session() as session:
-            # Write transactions allow the driver to handle retries and transient errors
             result = session.write_transaction(
-                self._create_and_return_friendship, person1_name, person2_name)
-            for row in result:
-                print("Created friendship between: {p1}, {p2}".format(p1=row['p1'], p2=row['p2']))
+                self._create_covid_strain, strain_id, strain_name
+            )
+            print("Created COVID STRAIN with ID: {0} and NAME: {1}".format(strain_id, strain_name))
 
     @staticmethod
-    def _create_and_return_friendship(tx, person1_name, person2_name):
-        # To learn more about the Cypher syntax, see https://neo4j.com/docs/cypher-manual/current/
-        # The Reference Card is also a good resource for keywords https://neo4j.com/docs/cypher-refcard/current/
+    def _create_covid_strain(tx, strain_id, strain_name):
         query = (
-            "CREATE (p1:Person { name: $person1_name }) "
-            "CREATE (p2:Person { name: $person2_name }) "
-            "CREATE (p1)-[:KNOWS]->(p2) "
-            "RETURN p1, p2"
+            "CREATE (s:Strain { strain_id: $strain_id, name: $strain_name }) "
+            "RETURN s"
         )
-        result = tx.run(query, person1_name=person1_name, person2_name=person2_name)
+        result = tx.run(query, strain_id=strain_id, strain_name=strain_name)
         try:
-            return [{"p1": row["p1"]["name"], "p2": row["p2"]["name"]}
-                    for row in result]
-        # Capture any errors along with the query and data for traceability
+            return [{"s": row["s"]["name"]} for row in result]
         except ServiceUnavailable as exception:
             logging.error("{query} raised an error: \n {exception}".format(
                 query=query, exception=exception))
             raise
 
-    def find_person(self, person_name):
+    def create_vaccine(self, vac_id, vac_name):
         with self.driver.session() as session:
-            result = session.read_transaction(self._find_and_return_person, person_name)
-            for row in result:
-                print("Found person: {row}".format(row=row))
-
-
-
+            result = session.write_transaction(
+                self._create_vaccine, vac_id, vac_name
+            )
+            print("Created VACCINE with ID: {0} and NAME: {1}".format(vac_id, vac_name))
 
     @staticmethod
-    def _find_and_return_person(tx, person_name):
+    def _create_vaccine(tx, vac_id, vac_name):
         query = (
-            "MATCH (p:Person) "
-            "WHERE p.name = $person_name "
-            "RETURN p.name AS name"
+            "CREATE (v:Vaccine { vac_id: $vac_id, name: $vac_name }) "
+            "RETURN v"
         )
-        result = tx.run(query, person_name=person_name)
-        return [row["name"] for row in result]
+        result = tx.run(query, vac_id=vac_id, vac_name=vac_name)
+        try:
+            return [{"v": row["v"]["name"]} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
