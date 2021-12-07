@@ -1,6 +1,7 @@
 def delete_all(conn):
     cur = conn.cursor
     try:
+        cur.execute("SET SQL_SAFE_UPDATES = 0")
         cur.execute("DELETE FROM person")
         cur.execute("DELETE FROM city")
         cur.execute("DELETE FROM country")
