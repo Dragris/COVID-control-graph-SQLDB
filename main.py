@@ -1,6 +1,7 @@
 from graph import App
 import mysql
 import MySQLdb
+import consts
 
 
 def clear_db(app, conn):
@@ -8,8 +9,7 @@ def clear_db(app, conn):
     app.delete_all()
 
 
-def add_country(app, conn, cid, name, population):
-    # TODO: ADD TO SQL
+def add_country(app, conn, name, population):
     cid = mysql.add_country(conn, name, population)
     app.create_country(cid, name)
 
@@ -89,7 +89,7 @@ def populator(app, conn):
 
     # CREATE COUNTRIES
     print('\nCreating countries')
-    add_country(app, conn, 1, "Spain without the S", 1)
+    add_country(app, conn, "Spain without the S", 1)
 
     # CREATE CITIES
     print('\nCreating cities')
@@ -177,12 +177,8 @@ def populator(app, conn):
 
 if __name__ == "__main__":
     # Aura queries use an encrypted connection using the "neo4j+s" URI scheme
-    uri = "neo4j+s://10133952.databases.neo4j.io"
-    user = "neo4j"
-    password = "bwlRM9QFS7BleaZDEX_fyxXaKprfuO2Oyl9U0lQ-rVc"
-    pass_sql = 'Exhaustolol2014!'
-    conn = MySQLdb.connect(host='localhost', user='root', passwd=pass_sql, db='COVID')
-    app = App(uri, user, password)
+    conn = MySQLdb.connect(host=consts.HOST, user=consts.SQL_USER, passwd=consts.SQL_PASS, db=consts.DB)
+    app = App(consts.URI, consts.GRAPH_USER, consts.GRAPH_PASS)
 
     populator(app, conn)
 
