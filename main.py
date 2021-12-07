@@ -1,4 +1,5 @@
 from graph import App
+import MySQLdb
 
 
 def clear_db(app):
@@ -57,7 +58,7 @@ def which_strain(app, pid):
     return app.which_strain(pid)
 
 
-def populator(app):
+def populator(app, conn):
     # CLEAR DB
     clear_db(app)
 
@@ -123,11 +124,17 @@ def populator(app):
     is_person_infected(app, 4)
     which_strain(app, 4)
 
+
 if __name__ == "__main__":
     # Aura queries use an encrypted connection using the "neo4j+s" URI scheme
     uri = "neo4j+s://10133952.databases.neo4j.io"
     user = "neo4j"
     password = "bwlRM9QFS7BleaZDEX_fyxXaKprfuO2Oyl9U0lQ-rVc"
+    pass_sql = 'pon aqui tu contra bro'
+    myConnection = MySQLdb.connect(host='localhost', user='root', passwd=pass_sql, db='COVID')
     app = App(uri, user, password)
-    populator(app)
+
+    populator(app, myConnection)
+
     app.close()
+    myConnection.close()
