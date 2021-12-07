@@ -1,11 +1,11 @@
 def delete_all(conn):
     cur = conn.cursor
     try:
-        cur.execute("DELETE * from person")
-        cur.execute("DELETE * from city")
-        cur.execute("DELETE * from country")
-        cur.execute("DELETE * from vaccine")
-        cur.execute("DELETE * from strain")
+        cur.execute("DELETE FROM person")
+        cur.execute("DELETE FROM city")
+        cur.execute("DELETE FROM country")
+        cur.execute("DELETE FROM vaccine")
+        cur.execute("DELETE FROM strain")
         conn.commit()
     except:
         conn.rollback()
