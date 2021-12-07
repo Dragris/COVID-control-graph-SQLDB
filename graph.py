@@ -318,7 +318,6 @@ class App:
             "MATCH (p:Person {person_id: $person_id}) "
             "MATCH (s:Strain {strain_id: $strain_id}) "
             "MATCH (p)-[r]->(s) "
-            "WHERE type(r) = 'INFECTED_BY' "
             "DETACH DELETE r "
             "RETURN p, s "
         )
@@ -340,46 +339,20 @@ class App:
                 print("{0} is infected by {1} strains".format(result[0]['p'], result[0]['n_strains']))
                 return True
             else:
-                name = session.write_transaction(
-                    self._find_person, person_id
-                )
-                print("{0} is not infected".format(name[0]['p']))
+                print("PERSON with ID: {0} is not infected".format(person_id))
                 return False
 
     @staticmethod
     def _is_person_infected(tx, person_id):
         query = (
             "MATCH (p:Person {person_id: $person_id}) "
-            "MATCH (p)-[r]->() "
-            "WHERE type(r) = 'INFECTED_BY' "
+            "MATCH (p)-[r]->(:Strain) "
             "RETURN count(r) as n_strains, p "
         )
 
         result = tx.run(query, person_id=person_id)
         try:
             return [{"n_strains": row["n_strains"], 'p': row['p']['name']} for row in result]
-        except ServiceUnavailable as exception:
-            logging.error("{query} raised an error: \n {exception}".format(
-                query=query, exception=exception))
-            raise
-
-    def find_person(self, person_id):
-        with self.driver.session() as session:
-            result = session.write_transaction(
-                self._find_person, person_id
-            )
-            return result[0]['p']
-
-    @staticmethod
-    def _find_person(tx, person_id):
-        query = (
-            "MATCH (p:Person {person_id: $person_id}) "
-            "RETURN p "
-        )
-
-        result = tx.run(query, person_id=person_id)
-        try:
-            return [{'p': row['p']['name']} for row in result]
         except ServiceUnavailable as exception:
             logging.error("{query} raised an error: \n {exception}".format(
                 query=query, exception=exception))
@@ -401,7 +374,6 @@ class App:
         query = (
             "MATCH (p:Person {person_id: $person_id}) "
             "MATCH (p)-[r]->(s:Strain) "
-            "WHERE type(r) = 'INFECTED_BY' "
             "RETURN s.name AS name "
         )
         result = tx.run(query, person_id=person_id)
@@ -412,4 +384,57 @@ class App:
                 query=query, exception=exception))
             raise
 
+    def is_person_vaccinated(self, person_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._is_person_vaccinated, person_id
+            )
+            if result:
+                print("{0} is vaccinated with {1} different vaccines".format(result[0]['p'], result[0]['n_vaccines']))
+                return True
+            else:
+                print("PERSON with ID: {0} is not vaccinated".format(person_id))
+                return False
+
+    @staticmethod
+    def _is_person_vaccinated(tx, person_id):
+        query = (
+            "MATCH (p:Person {person_id: $person_id}) "
+            "MATCH (p)-[r]->(:Vaccine) "
+            "RETURN count(r) as n_vaccines, p "
+        )
+
+        result = tx.run(query, person_id=person_id)
+        try:
+            return [{"n_vaccines": row["n_vaccines"], 'p': row['p']['name']} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def which_vaccine(self, person_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._which_vaccine, person_id
+            )
+            ret = []
+            for row in result:
+                print("PERSON with ID {0} is vaccinated with: {1}".format(person_id, row))
+                ret.append(row)
+            return ret
+
+    @staticmethod
+    def _which_vaccine(tx, person_id):
+        query = (
+            "MATCH (p:Person {person_id: $person_id}) "
+            "MATCH (p)-[r]->(v:Vaccine) "
+            "RETURN v.name AS name "
+        )
+        result = tx.run(query, person_id=person_id)
+        try:
+            return [row["name"] for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
 
