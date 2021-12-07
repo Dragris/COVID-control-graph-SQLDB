@@ -1,14 +1,16 @@
 from graph import App
+import mysql
 import MySQLdb
 
 
 def clear_db(app, conn):
+    mysql.delete_all(conn)
     app.delete_all()
-    # TODO: Clear SQL
 
 
 def add_country(app, conn, cid, name, population):
     # TODO: ADD TO SQL
+    cid = mysql.add_country(conn, name, population)
     app.create_country(cid, name)
 
 

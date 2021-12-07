@@ -1,23 +1,27 @@
-if __name__ == '__main__':
-    def doQuery(conn):
-        cur = conn.cursor()
+def delete_all(conn):
+    cur = conn.cursor
+    try:
+        cur.execute("DELETE * from person")
+        cur.execute("DELETE * from city")
+        cur.execute("DELETE * from country")
+        cur.execute("DELETE * from vaccine")
+        cur.execute("DELETE * from strain")
+        conn.commit()
+    except:
+        conn.rollback()
+        raise
 
-        cur.execute("SELECT * FROM person")
 
-        for _ in cur.fetchall():
-            print(_)
-
-
-    print("Using mysqlclient (MySQLdb):")
-    import MySQLdb
-
-    myConnection = MySQLdb.connect(host=hostname, user=username, passwd=password, db=database)
-    doQuery(myConnection)
-    myConnection.close()
-
-    print("Using pymysql:")
-    import pymysql
-
-    myConnection = pymysql.connect(host=hostname, user=username, passwd=password, db=database)
-    doQuery(myConnection)
-    myConnection.close()
+def add_country(conn, name, population):
+    cid = None
+    cur = conn.cursor
+    try:
+        sql = "INSERT INTO city VALUES (%s, &s, %s)"
+        val = (None, name, population)
+        cur.execute(sql, val)
+        cid = cur.lastrowid
+    except:
+        conn.rollback()
+        raise
+    conn.commit()
+    return cid
