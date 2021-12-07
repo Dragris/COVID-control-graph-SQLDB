@@ -1,4 +1,5 @@
-from test import App
+from graph import App
+
 
 def clear_db(app):
     app.delete_all()
