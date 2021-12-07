@@ -6,53 +6,68 @@ def clear_db(app):
     app.delete_all()
     # TODO: Clear SQL
 
+
 def add_country(app, cid, name, population):
-    #TODO: ADD TO SQL
+    # TODO: ADD TO SQL
     app.create_country(cid, name)
+
 
 def add_city(app, cid, name, population):
     # TODO: ADD TO SQL
     app.create_city(cid, name)
 
+
 def add_person(app, pid, name, age):
     # TODO: ADD TO SQL
     app.create_person(pid, name)
 
+
 def add_person_contact(app, pid1, pid2):
     app.create_person_contact(pid1, pid2)
+
 
 def add_covid_strain(app, sid, name, data):
     # TODO: ADD TO SQL
     app.create_covid_strain(sid, name)
 
+
 def add_vaccine(app, vid, name, data):
     # TODO: ADD TO SQL
     app.create_vaccine(vid, name)
+
 
 def delete_person(app, pid):
     app.delete_person(pid)
     # TODO: DELETE FROM SQL
 
+
 def add_city_person_rel(app, cid, pid):
     app.create_city_person_relation(cid, pid)
+
 
 def add_country_city_rel(app, coid, ciid):
     app.create_country_city_relation(coid, ciid)
 
+
 def modify_residence(app, pid, ncid):
     app.change_person_city(pid, ncid)
+
 
 def add_infected_relation(app, pid, sid):
     app.create_infected_relation(pid, sid)
 
+
 def add_vaccinated_relation(app, pid, vid):
     app.create_vaccinated_relation(pid, vid)
+
 
 def delete_infected_relation(app, pid, sid):
     app.delete_infected_relation(pid, sid)
 
+
 def is_person_infected(app, pid):
     return app.is_person_infected(pid)
+
 
 def which_strain(app, pid):
     return app.which_strain(pid)
