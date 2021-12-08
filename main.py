@@ -266,8 +266,7 @@ def populator(app, conn):
 
     # COUNTRY WITH THE MOST INFECTED PERSONS
     print('\nQuery: Country with the most infected persons')
-    a = country_most_infected(app, conn)
-    print(a)
+    country_most_infected(app, conn)
 
 
 if __name__ == "__main__":
