@@ -20,7 +20,7 @@ def add_country(app, conn, name, population):
     conn.commit()
 
 
-def add_city(app, conn, cid, name, population):
+def add_city(app, conn, name, population):
     try:
         cid = mysql.add_city(conn, name, population)
         app.create_city(cid, name)
@@ -31,10 +31,10 @@ def add_city(app, conn, cid, name, population):
     conn.commit()
 
 
-def add_person(app, conn, pid="12345678A", first_name="John", last_name="Doe", sex="N", age="2000-01-01 09:00:00"):
+def add_person(app, conn, pid="12345678A", first_name="John", last_name="Doe", sex="N", dob="2000-01-01 09:00:00"):
     try:
-        uid = mysql.add_person(conn, first_name, last_name, pid, sex, age)
-        app.create_person(uid, first_name)
+        uid = mysql.add_person(conn, first_name, last_name, pid, sex, dob)
+        app.create_person(uid, first_name+' '+last_name)
     except:
         conn.rollback()
         return
@@ -46,7 +46,7 @@ def add_person_contact(app, pid1, pid2):
     app.create_person_contact(pid1, pid2)
 
 
-def add_covid_strain(app, conn, sid, name, data):
+def add_covid_strain(app, conn, name, data):
     try:
         sid = mysql.add_covid_strain(conn, name, data)
         app.create_covid_strain(sid, name)
@@ -57,7 +57,7 @@ def add_covid_strain(app, conn, sid, name, data):
     conn.commit()
 
 
-def add_vaccine(app, conn, vid, name, data):
+def add_vaccine(app, conn, name, data):
     try:
         vid = mysql.add_vaccine(conn, name, data)
         app.create_vaccine(vid, name)
@@ -105,7 +105,7 @@ def which_strain(app, pid):
     return app.which_strain(pid)
 
 
-def is_person_vaccinated(app, conn, pid):
+def is_person_vaccinated(app, pid):
     return app.is_person_vaccinated(pid)
 
 
@@ -113,11 +113,11 @@ def which_vaccine(app, pid):
     return app.which_vaccine(pid)
 
 
-def has_city_infected(app, conn, cid):
+def has_city_infected(app, cid):
     return app.has_city_infected(cid)
 
 
-def has_city_vaccinated(app, conn, cid):
+def has_city_vaccinated(app, cid):
     return app.has_city_vaccinated(cid)
 
 
@@ -132,26 +132,26 @@ def populator(app, conn):
 
     # CREATE CITIES
     print('\nCreating cities')
-    add_city(app, conn, 1, "Barcelona", 1)
-    add_city(app, conn, 2, "Madrid", 1)
+    add_city(app, conn, "Barcelona", 1)
+    add_city(app, conn, "Madrid", 1)
 
     # CREATE PERSONS
     print('\nCreating persons')
-    add_person(app, conn, 1, "David", 12)
-    add_person(app, conn, 2, "Alberto", 34)
-    add_person(app, conn, 3, "Samuel", 56)
-    add_person(app, conn, 4, "Eric", 78)
-    add_person(app, conn, 5, "Jerónimo", 91)
+    add_person(app, conn, '1', "David", "Lopez")
+    add_person(app, conn, '2', "Alberto", "Barragan")
+    add_person(app, conn, '3', "Samuel", "Calabria")
+    add_person(app, conn, '4', "Eric", "Duque")
+    add_person(app, conn, '5', "Jerónimo", "Hernandez")
 
     # CREATE COVID STRAINS
     print('\nCreating strains')
-    add_covid_strain(app, conn, 1, "Alpha", 1)
-    add_covid_strain(app, conn, 2, "Beta", 1)
+    add_covid_strain(app, conn, "Alpha", "This is the Alpha strain")
+    add_covid_strain(app, conn, "Beta", "This is the Beta strain")
 
     # CREATE VACCINE
     print('\nCreating vaccines')
-    add_vaccine(app, conn, 1, "Astrazeneca", 1)
-    add_vaccine(app, conn, 2, "Moderna", 1)
+    add_vaccine(app, conn, "Astrazeneca", "Atrazeneca goes BRRRR")
+    add_vaccine(app, conn, "Moderna", "This for boomers so I can modernize them")
 
     # CREATE PERSONS CONTACTS
     print('\nCreating PERSON-PERSON relations')
@@ -214,13 +214,13 @@ def populator(app, conn):
 
     # HAS A CITY ANY INFECTED PERSON? HOW MANY?
     print('\nQuery: How many infected persons are in a city?')
-    has_city_infected(app, conn, 1)
-    has_city_infected(app, conn, 2)
+    has_city_infected(app, 1)
+    has_city_infected(app, 2)
 
     # HAS A CITY ANY VACCINATED PERSON? HOW MANY?
     print('\nQuery: How many infected persons are in a city?')
-    has_city_vaccinated(app, conn, 1)
-    has_city_vaccinated(app, conn, 2)
+    has_city_vaccinated(app, 1)
+    has_city_vaccinated(app, 2)
 
 
 if __name__ == "__main__":
