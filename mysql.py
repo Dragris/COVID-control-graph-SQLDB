@@ -5,7 +5,7 @@ def delete_all(conn):
 
         cur.execute("DROP TABLE person")
         cur.execute(
-            "CREATE TABLE person (`idperson` int NOT NULL AUTO_INCREMENT, `first_name` varchar(45) NOT NULL, `last_name` varchar(45) NOT NULL, `sex` char(1) NOT NULL, `dob` datetime NOT NULL, PRIMARY KEY (`idperson`), UNIQUE KEY `idperson_UNIQUE` (`idperson`))"
+            "CREATE TABLE person (`idperson` int NOT NULL AUTO_INCREMENT, `first_name` varchar(45) NOT NULL, `last_name` varchar(45) NOT NULL, `pid` varchar(9) NOT NULL, `sex` char(1) NOT NULL, `dob` datetime NOT NULL, PRIMARY KEY (`idperson`), UNIQUE KEY `idperson_UNIQUE` (`idperson`))"
         )
 
         cur.execute("DROP TABLE city")
@@ -49,7 +49,74 @@ def add_country(conn, name, population):
         cur.execute(sql, val)
         cid = cur.lastrowid
     except:
+        raise
+
+    return cid
+
+
+def add_city(conn, name, population):
+    cid = None
+    cur = conn.cursor()
+    try:
+        sql = "INSERT INTO city VALUES (%s, %s, %s)"
+        val = (None, name, population)
+        cur.execute(sql, val)
+        cid = cur.lastrowid
+    except:
+        raise
+
+    return cid
+
+
+def add_person(conn, first_name, last_name, pid, sex, age):
+    uid = None
+    cur = conn.cursor()
+    try:
+        sql = "INSERT INTO person VALUES (%s, %s, %s, %s, %s, %s)"
+        val = (None, first_name, last_name, pid, sex, age)
+        cur.execute(sql, val)
+        uid = cur.lastrowid
+    except:
+        raise
+
+    return uid
+
+
+def add_covid_strain(conn, name, data):
+    sid = None
+    cur = conn.cursor()
+    try:
+        sql = "INSERT INTO strain VALUES (%s, %s, %s)"
+        val = (None, name, data)
+        cur.execute(sql, val)
+        sid = cur.lastrowid
+    except:
+        raise
+
+    return sid
+
+
+def add_vaccine(conn, name, data):
+    vid = None
+    cur = conn.cursor()
+    try:
+        sql = "INSERT INTO vaccine VALUES (%s, %s, %s)"
+        val = (None, name, data)
+        cur.execute(sql, val)
+        vid = cur.lastrowid
+    except:
+        raise
+
+    return vid
+
+def delete_person(conn, pid):
+    try:
+        cur = conn.cursor()
+        sql = "DELETE FROM person WHERE idperson = %s"
+        val = (pid,)  # Remember to put comma after only one val as it needs to be iterable
+        cur.execute(sql, val)
+    except:
         conn.rollback()
         raise
+
     conn.commit()
-    return cid
