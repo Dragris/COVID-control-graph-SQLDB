@@ -109,4 +109,14 @@ def add_vaccine(conn, name, data):
 
     return vid
 
+def delete_person(conn, pid):
+    try:
+        cur = conn.cursor()
+        sql = "DELETE FROM person WHERE idperson = %s"
+        val = (pid,)  # Remember to put comma after only one val as it needs to be iterable
+        cur.execute(sql, val)
+    except:
+        conn.rollback()
+        raise
 
+    conn.commit()

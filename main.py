@@ -70,7 +70,7 @@ def add_vaccine(app, conn, vid, name, data):
 
 def delete_person(app, conn, pid):
     app.delete_person(pid)
-    # TODO: DELETE FROM SQL
+    mysql.delete_person(conn, pid)
 
 
 def add_city_person_rel(app, cid, pid):
