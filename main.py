@@ -10,32 +10,62 @@ def clear_db(app, conn):
 
 
 def add_country(app, conn, name, population):
-    cid = mysql.add_country(conn, name, population)
-    app.create_country(cid, name)
+    try:
+        cid = mysql.add_country(conn, name, population)
+        app.create_country(cid, name)
+    except:
+        conn.rollback()
+        return
+
+    conn.commit()
 
 
 def add_city(app, conn, cid, name, population):
-    # TODO: ADD TO SQL
-    app.create_city(cid, name)
+    try:
+        cid = mysql.add_city(conn, name, population)
+        app.create_city(cid, name)
+    except:
+        conn.rollback()
+        return
+
+    conn.commit()
 
 
-def add_person(app, conn, pid, name, age):
-    # TODO: ADD TO SQL
-    app.create_person(pid, name)
+def add_person(app, conn, pid="12345678A", first_name="John", last_name="Doe", sex="N", age="2000-01-01 09:00:00"):
+    try:
+        uid = mysql.add_person(conn, first_name, last_name, pid, sex, age)
+        app.create_person(uid, first_name)
+    except:
+        conn.rollback()
+        return
+
+    conn.commit()
 
 
-def add_person_contact(app, conn, pid1, pid2):
+def add_person_contact(app, pid1, pid2):
     app.create_person_contact(pid1, pid2)
 
 
 def add_covid_strain(app, conn, sid, name, data):
-    # TODO: ADD TO SQL
-    app.create_covid_strain(sid, name)
+    try:
+        sid = mysql.add_covid_strain(conn, name, data)
+        app.create_covid_strain(sid, name)
+    except:
+        conn.rollback()
+        return
+
+    conn.commit()
 
 
 def add_vaccine(app, conn, vid, name, data):
-    # TODO: ADD TO SQL
-    app.create_vaccine(vid, name)
+    try:
+        vid = mysql.add_vaccine(conn, name, data)
+        app.create_vaccine(vid, name)
+    except:
+        conn.rollback()
+        return
+
+    conn.commit()
 
 
 def delete_person(app, conn, pid):
@@ -43,42 +73,43 @@ def delete_person(app, conn, pid):
     # TODO: DELETE FROM SQL
 
 
-def add_city_person_rel(app, conn, cid, pid):
+def add_city_person_rel(app, cid, pid):
     app.create_city_person_relation(cid, pid)
 
 
-def add_country_city_rel(app, conn, coid, ciid):
+def add_country_city_rel(app, coid, ciid):
     app.create_country_city_relation(coid, ciid)
 
 
-def modify_residence(app, conn, pid, ncid):
+def modify_residence(app, pid, ncid):
     app.change_person_city(pid, ncid)
 
 
-def add_infected_relation(app, conn, pid, sid):
+def add_infected_relation(app, pid, sid):
     app.create_infected_relation(pid, sid)
 
 
-def add_vaccinated_relation(app, conn, pid, vid):
+def add_vaccinated_relation(app, pid, vid):
     app.create_vaccinated_relation(pid, vid)
 
 
-def delete_infected_relation(app, conn, pid, sid):
+def delete_infected_relation(app, pid, sid):
     app.delete_infected_relation(pid, sid)
 
 
-def is_person_infected(app, conn, pid):
+def is_person_infected(app, pid):
     return app.is_person_infected(pid)
 
 
-def which_strain(app, conn, pid):
+def which_strain(app, pid):
     return app.which_strain(pid)
 
-def is_person_vaccinated(app, conn, pid):
+
+def is_person_vaccinated(app, pid):
     return app.is_person_vaccinated(pid)
 
 
-def which_vaccine(app, conn, pid):
+def which_vaccine(app, pid):
     return app.which_vaccine(pid)
 
 
@@ -116,36 +147,36 @@ def populator(app, conn):
 
     # CREATE PERSONS CONTACTS
     print('\nCreating PERSON-PERSON relations')
-    add_person_contact(app, conn, 1, 2)
-    add_person_contact(app, conn, 3, 4)
-    add_person_contact(app, conn, 4, 5)
+    add_person_contact(app, 1, 2)
+    add_person_contact(app, 3, 4)
+    add_person_contact(app, 4, 5)
 
     # CREATE PERSON-CITY RELATIONS
     print('\nCreating PERSON-CITY relations')
-    add_city_person_rel(app, conn, 1, 1)
-    add_city_person_rel(app, conn, 1, 2)
+    add_city_person_rel(app, 1, 1)
+    add_city_person_rel(app, 1, 2)
 
     # CREATE COUNTRY-CITY RELATIONS
     print('\nCreating COUNTRY-CITY relations')
-    add_country_city_rel(app, conn, 1, 1)
-    add_country_city_rel(app, conn, 1, 2)
+    add_country_city_rel(app, 1, 1)
+    add_country_city_rel(app, 1, 2)
 
     # CREATE PERSON-STRAIN RELATION
     print('\nCreating PERSON-STRAIN relations')
-    add_infected_relation(app, conn, 1, 1)
-    add_infected_relation(app, conn, 1, 2)
-    add_infected_relation(app, conn, 4, 1)
-    add_infected_relation(app, conn, 4, 2)
+    add_infected_relation(app, 1, 1)
+    add_infected_relation(app, 1, 2)
+    add_infected_relation(app, 4, 1)
+    add_infected_relation(app, 4, 2)
 
     # CREATE PERSON-VACCINE RELATION
     print('\nCreating PERSON-VACCINE relations')
-    add_vaccinated_relation(app, conn, 2, 1)
-    add_vaccinated_relation(app, conn, 2, 2)
-    add_vaccinated_relation(app, conn, 5, 2)
+    add_vaccinated_relation(app, 2, 1)
+    add_vaccinated_relation(app, 2, 2)
+    add_vaccinated_relation(app, 5, 2)
 
     # MODIFY PERSON RESIDENCE
     print('\nModifying person residence')
-    modify_residence(app, conn, 1, 2)
+    modify_residence(app, 1, 2)
 
     # DELETE PERSON
     print('\nDeleting person')
@@ -153,26 +184,25 @@ def populator(app, conn):
 
     # DELETE INFECTED RELATION
     print('\nDeleting PERSON-STRAIN relation')
-    delete_infected_relation(app, conn, 1, 2)
+    delete_infected_relation(app, 1, 2)
 
     # IS A PERSON INFECTED? HOW MANY SRTAINS?
     print('\nQuery: Is a person infected? By how many strains?')
-    is_person_infected(app, conn, 1)
-    is_person_infected(app, conn, 4)
+    is_person_infected(app, 1)
+    is_person_infected(app, 4)
 
     # BY WHICH STRAIN/S IS A PERSON INFECTED?
     print('\nQuery: By which strain/s is a person infected?')
-    which_strain(app, conn, 4)
+    which_strain(app, 4)
 
     # IS A PERSON VACCINATED? HOW MANY VACCINES?
     print('\nQuery: Is a person vaccinated? With how many vaccines?')
-    is_person_vaccinated(app, conn, 2)
-    is_person_vaccinated(app, conn, 1)
+    is_person_vaccinated(app, 2)
+    is_person_vaccinated(app, 1)
 
     # WITH WHAT VACCINE/S IS A PERSON VACCINATED?
     print('\nQuery: With what vaccine/s is a person vaccinated?')
-    which_vaccine(app, conn, 2)
-
+    which_vaccine(app, 2)
 
 
 if __name__ == "__main__":
