@@ -13,33 +13,36 @@ def add_country(app, conn, name, population):
     try:
         cid = mysql.add_country(conn, name, population)
         app.create_country(cid, name)
+
+        # Commit SQL
+        conn.commit()
     except:
         conn.rollback()
         return
-
-    conn.commit()
 
 
 def add_city(app, conn, name, population):
     try:
         cid = mysql.add_city(conn, name, population)
         app.create_city(cid, name)
+
+        # Commit SQL
+        conn.commit()
     except:
         conn.rollback()
         return
-
-    conn.commit()
 
 
 def add_person(app, conn, pid="12345678A", first_name="John", last_name="Doe", sex="N", dob="2000-01-01 09:00:00"):
     try:
         uid = mysql.add_person(conn, first_name, last_name, pid, sex, dob)
-        app.create_person(uid, first_name+' '+last_name)
+        app.create_person(uid, first_name + ' ' + last_name)
+
+        # Commit SQL
+        conn.commit()
     except:
         conn.rollback()
         return
-
-    conn.commit()
 
 
 def add_person_contact(app, pid1, pid2):
@@ -50,22 +53,24 @@ def add_covid_strain(app, conn, name, data):
     try:
         sid = mysql.add_covid_strain(conn, name, data)
         app.create_covid_strain(sid, name)
+
+        # Commit SQL
+        conn.commit()
     except:
         conn.rollback()
         return
-
-    conn.commit()
 
 
 def add_vaccine(app, conn, name, data):
     try:
         vid = mysql.add_vaccine(conn, name, data)
         app.create_vaccine(vid, name)
+
+        # Commit SQL
+        conn.commit()
     except:
         conn.rollback()
         return
-
-    conn.commit()
 
 
 def delete_person(app, conn, pid):
