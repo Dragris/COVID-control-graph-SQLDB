@@ -13,14 +13,14 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-You can check the 3rd deliverable of the Advanced Databases subject.
-The exercise consists in linking an SQL DB and a Non-SQL DB.
-The different types of Non-SQL databases where assigned randomly, we got Graph DBs
+You can check our 3rd deliverable exercise of the Advanced Databases course.
+The exercise consists on linking a SQL DB and a Non-SQL DB.
+The different types of Non-SQL databases were assigned randomly, we got Graph DBs.
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Installation
 
-1. Install the necesary dependencies with:
+1. Install the necessary dependencies with:
    ```
    pip install -r requirements.txt
    ```
