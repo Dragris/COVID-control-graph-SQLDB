@@ -155,6 +155,42 @@ def country_most_infected(app, conn):
     return country_name, num_infected
 
 
+def city_most_vaccinated(app, conn):
+    city_name, num_vaccinated = app.city_most_vaccinated()
+    # TODO: ADD to SQL stats
+    return city_name, num_vaccinated
+
+
+def country_most_vaccinated(app, conn):
+    country_name, num_vaccinated = app.country_most_vaccinated()
+    # TODO: ADD to SQL stats
+    return country_name, num_vaccinated
+
+
+def city_least_infected(app, conn):
+    city_name, num_infected = app.city_least_infected()
+    # TODO: ADD to SQL stats
+    return city_name, num_infected
+
+
+def country_least_infected(app, conn):
+    country_name, num_infected = app.country_least_infected()
+    # TODO: ADD to SQL stats
+    return country_name, num_infected
+
+
+def city_least_vaccinated(app, conn):
+    city_name, num_vaccinated = app.city_least_vaccinated()
+    # TODO: ADD to SQL stats
+    return city_name, num_vaccinated
+
+
+def country_least_vaccinated(app, conn):
+    country_name, num_vaccinated = app.country_least_vaccinated()
+    # TODO: ADD to SQL stats
+    return country_name, num_vaccinated
+
+
 def populator(app, conn):
     # CLEAR DB
     print('Clearing DB')
@@ -176,6 +212,7 @@ def populator(app, conn):
     add_person(app, conn, '3', "Samuel", "Calabria")
     add_person(app, conn, '4', "Eric", "Duque")
     add_person(app, conn, '5', "Jerónimo", "Hernandez")
+    add_person(app, conn, '6', "Arnau", "Gris")
 
     # CREATE COVID STRAINS
     print('\nCreating strains')
@@ -198,6 +235,7 @@ def populator(app, conn):
     add_city_person_rel(app, 1, 1)
     add_city_person_rel(app, 1, 2)
     add_city_person_rel(app, 2, 4)
+    add_city_person_rel(app, 1, 5)
 
     # CREATE COUNTRY-CITY RELATIONS
     print('\nCreating COUNTRY-CITY relations')
@@ -272,6 +310,30 @@ def populator(app, conn):
     # COUNTRY WITH THE MOST INFECTED PERSONS
     print('\nQuery: Country with the most infected persons')
     country_most_infected(app, conn)
+
+    # CITY WITH THE MOST VACCINATED PERSONS
+    print('\nQuery: City with the most vaccinated persons')
+    city_most_vaccinated(app, conn)
+
+    # COUNTRY WITH THE MOST VACCINATED PERSONS
+    print('\nQuery: Country with the most vaccinated persons')
+    country_most_vaccinated(app, conn)
+
+    # CITY WITH THE LEAST INFECTED PERSONS
+    print('\nQuery: City with the least infected persons')
+    city_least_infected(app, conn)
+
+    # COUNTRY WITH THE LEAST INFECTED PERSONS
+    print('\nQuery: Country with the least infected persons')
+    country_least_infected(app, conn)
+
+    # CITY WITH THE LEAST VACCINATED PERSONS
+    print('\nQuery: City with the least vaccinated persons')
+    city_least_vaccinated(app, conn)
+
+    # COUNTRY WITH THE LEAST VACCINATED PERSONS
+    print('\nQuery: Country with the least vaccinated persons')
+    country_least_vaccinated(app, conn)
 
 
 if __name__ == "__main__":

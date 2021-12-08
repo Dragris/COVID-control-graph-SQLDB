@@ -1,6 +1,7 @@
 from neo4j import GraphDatabase
 import logging
 from neo4j.exceptions import ServiceUnavailable
+import numpy as np
 
 class App:
 
@@ -587,6 +588,212 @@ class App:
         result = tx.run(query)
         try:
             return [{"c": row["c"]["name"], "num": row["num"]} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def city_most_vaccinated(self):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._city_most_vaccinated
+            )
+            if result:
+                print("{0} is the most vaccinated city with {1} vaccinated person/s".format(result[0]['c'], result[0]['num']))
+                return result[0]['c'], result[0]['num']
+
+    @staticmethod
+    def _city_most_vaccinated(tx):
+        query = (
+            "MATCH (c:City)-[r]->(p:Person) - [] -> (:Vaccine) "
+            "RETURN c, count(DISTINCT r) AS num "
+            "ORDER BY num DESC LIMIT 1 "
+        )
+
+        result = tx.run(query)
+        try:
+            return [{"c": row["c"]["name"], "num": row["num"]} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def country_most_vaccinated(self):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._country_most_vaccinated
+            )
+            if result:
+                print("{0} is the most vaccinated country with {1} vaccinated person/s".format(result[0]['c'], result[0]['num']))
+                return result[0]['c'], result[0]['num']
+
+    @staticmethod
+    def _country_most_vaccinated(tx):
+        query = (
+            "MATCH (c:Country) - [] ->(:City) - [r] -> (p:Person) - [] -> (:Vaccine) "
+            "RETURN c, count(DISTINCT r) AS num "
+            "ORDER BY num DESC LIMIT 1 "
+        )
+
+        result = tx.run(query)
+        try:
+            return [{"c": row["c"]["name"], "num": row["num"]} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def city_least_infected(self):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._city_least_infected
+            )
+            if result:
+                infected_cities = result[0]['ic']
+                city_list = result[0]['city_list']
+                nums =  result[0]['nums']
+                tmp = (None, np.Inf)
+                if len(infected_cities) == len(city_list):
+                    for city_id in range(len(infected_cities)):
+                        if nums[city_id] <= tmp[1]:
+                            tmp = (infected_cities[city_id]['name'], nums[city_id])
+                else:
+                    for city_id in range(len(city_list)):
+                        if city_list[city_id] not in infected_cities:
+                            tmp = (city_list[city_id]['name'], 0)
+                print("{0} is the least infected city with {1} infected person/s".format(tmp[0], tmp[1]))
+                return tmp
+
+    @staticmethod
+    def _city_least_infected(tx):
+        query = (
+            "MATCH (ci:City) "
+            "MATCH (c:City)-[r]->(p:Person) - [] -> (:Strain) "
+            "WITH DISTINCT c AS infected_cities, count(DISTINCT r) as num, collect(DISTINCT ci) as city_list "
+            "RETURN collect(infected_cities) as infected_list, collect(num) AS nums, city_list "
+            "ORDER BY nums "
+        )
+
+        result = tx.run(query)
+        try:
+            return [{"ic": row["infected_list"], "nums": row["nums"], "city_list": row["city_list"]} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def country_least_infected(self):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._country_least_infected
+            )
+            if result:
+                infected_countries = result[0]['ic']
+                country_list = result[0]['country_list']
+                nums =  result[0]['nums']
+                tmp = (None, np.Inf)
+                if len(infected_countries) == len(country_list):
+                    for country_id in range(len(infected_countries)):
+                        if nums[country_id] <= tmp[1]:
+                            tmp = (infected_countries[country_id]['name'], nums[country_id])
+                else:
+                    for country_id in range(len(country_list)):
+                        if country_list[country_id] not in infected_countries:
+                            tmp = (country_list[country_id]['name'], 0)
+                print("{0} is the least infected country with {1} infected person/s".format(tmp[0], tmp[1]))
+                return tmp
+
+    @staticmethod
+    def _country_least_infected(tx):
+        query = (
+            "MATCH (co:Country) "
+            "MATCH (c:Country) - [] -> (:City)-[r]->(p:Person) - [] -> (:Strain) "
+            "WITH DISTINCT c AS infected_countries, count(DISTINCT r) as num, collect(DISTINCT co) as country_list "
+            "RETURN collect(infected_countries) as infected_list, collect(num) AS nums, country_list "
+            "ORDER BY nums "
+        )
+
+        result = tx.run(query)
+        try:
+            return [{"ic": row["infected_list"], "nums": row["nums"], "country_list": row["country_list"]} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def city_least_vaccinated(self):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._city_least_vaccinated
+            )
+            if result:
+                vaccinated_cities = result[0]['vc']
+                city_list = result[0]['city_list']
+                nums =  result[0]['nums']
+                tmp = (None, np.Inf)
+                if len(vaccinated_cities) == len(city_list):
+                    for city_id in range(len(vaccinated_cities)):
+                        if nums[city_id] <= tmp[1]:
+                            tmp = (vaccinated_cities[city_id]['name'], nums[city_id])
+                else:
+                    for city_id in range(len(city_list)):
+                        if city_list[city_id] not in vaccinated_cities:
+                            tmp = (city_list[city_id]['name'], 0)
+                print("{0} is the least vaccinated city with {1} vaccinated person/s".format(tmp[0], tmp[1]))
+                return tmp
+
+    @staticmethod
+    def _city_least_vaccinated(tx):
+        query = (
+            "MATCH (ci:City) "
+            "MATCH (c:City)-[r]->(p:Person) - [] -> (:Vaccine) "
+            "WITH DISTINCT c AS vaccinated_cities, count(DISTINCT r) as num, collect(DISTINCT ci) as city_list "
+            "RETURN collect(vaccinated_cities) as vaccinated_list, collect(num) AS nums, city_list "
+            "ORDER BY nums "
+        )
+
+        result = tx.run(query)
+        try:
+            return [{"vc": row["vaccinated_list"], "nums": row["nums"], "city_list": row["city_list"]} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def country_least_vaccinated(self):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._country_least_vaccinated
+            )
+            if result:
+                vaccinated_countries = result[0]['vc']
+                country_list = result[0]['country_list']
+                nums =  result[0]['nums']
+                tmp = (None, np.Inf)
+                if len(vaccinated_countries) == len(country_list):
+                    for country_id in range(len(vaccinated_countries)):
+                        if nums[country_id] <= tmp[1]:
+                            tmp = (vaccinated_countries[country_id]['name'], nums[country_id])
+                else:
+                    for country_id in range(len(country_list)):
+                        if country_list[country_id] not in vaccinated_countries:
+                            tmp = (country_list[country_id]['name'], 0)
+                print("{0} is the least vaccinated country with {1} vaccinated person/s".format(tmp[0], tmp[1]))
+                return tmp
+
+    @staticmethod
+    def _country_least_vaccinated(tx):
+        query = (
+            "MATCH (co:Country) "
+            "MATCH (c:Country) - [] -> (:City)-[r]->(p:Person) - [] -> (:Vaccine) "
+            "WITH DISTINCT c AS vaccinated_countries, count(DISTINCT r) as num, collect(DISTINCT co) as country_list "
+            "RETURN collect(vaccinated_countries) as vaccinated_list, collect(num) AS nums, country_list "
+            "ORDER BY nums "
+        )
+
+        result = tx.run(query)
+        try:
+            return [{"vc": row["vaccinated_list"], "nums": row["nums"], "country_list": row["country_list"]} for row in result]
         except ServiceUnavailable as exception:
             logging.error("{query} raised an error: \n {exception}".format(
                 query=query, exception=exception))
