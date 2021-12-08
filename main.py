@@ -121,6 +121,30 @@ def has_city_vaccinated(app, cid):
     return app.has_city_vaccinated(cid)
 
 
+def total_vaccinated(app, conn):
+    n_vac = app.total_vaccinated()
+    # TODO: Add to SQL stats
+    return n_vac
+
+
+def total_infected(app, conn):
+    n_inf = app.total_infected()
+    # TODO: Add to SQL stats
+    return n_inf
+
+
+def city_most_infected(app, conn):
+    city_name, num_infected = app.city_most_infected()
+    # TODO: ADD to SQL stats
+    return city_name, num_infected
+
+
+def country_most_infected(app, conn):
+    country_name, num_infected = app.country_most_infected()
+    # TODO: ADD to SQL stats
+    return country_name, num_infected
+
+
 def populator(app, conn):
     # CLEAR DB
     print('Clearing DB')
@@ -163,6 +187,7 @@ def populator(app, conn):
     print('\nCreating PERSON-CITY relations')
     add_city_person_rel(app, 1, 1)
     add_city_person_rel(app, 1, 2)
+    add_city_person_rel(app, 2, 4)
 
     # CREATE COUNTRY-CITY RELATIONS
     print('\nCreating COUNTRY-CITY relations')
@@ -221,6 +246,23 @@ def populator(app, conn):
     print('\nQuery: How many infected persons are in a city?')
     has_city_vaccinated(app, 1)
     has_city_vaccinated(app, 2)
+
+    # TOTAL OF VACCINATED PERSONS
+    print('\nQuery: Total of vaccinated persons')
+    total_vaccinated(app, conn)
+
+    # TOTAL OF INFECTED PERSONS
+    print('\nQuery: Total of infected persons')
+    total_infected(app, conn)
+
+    # CITY WITH THE MOST INFECTED PERSONS
+    print('\nQuery: City with the most infected persons')
+    city_most_infected(app, conn)
+
+    # COUNTRY WITH THE MOST INFECTED PERSONS
+    print('\nQuery: Country with the most infected persons')
+    a = country_most_infected(app, conn)
+    print(a)
 
 
 if __name__ == "__main__":

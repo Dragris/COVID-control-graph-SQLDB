@@ -494,3 +494,100 @@ class App:
                 query=query, exception=exception))
             raise
 
+    def total_vaccinated(self):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._total_vaccinated
+            )
+            if result:
+                print("There are {0} vaccinated person/s".format(result[0]['n_vaccines']))
+                return result[0]['n_vaccines']
+
+    @staticmethod
+    def _total_vaccinated(tx):
+        query = (
+            "MATCH (p:Person) - [] -> (:Vaccine) "
+            "RETURN count(DISTINCT p) as n_vaccines "
+        )
+
+        result = tx.run(query)
+        try:
+            return [{"n_vaccines": row["n_vaccines"]} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def total_infected(self):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._total_infected
+            )
+            if result:
+                print("There are {0} infected person/s".format(result[0]['n_infect']))
+                return result[0]['n_infect']
+
+    @staticmethod
+    def _total_infected(tx):
+        query = (
+            "MATCH (p:Person) - [] -> (:Strain) "
+            "RETURN count(DISTINCT p) as n_infect "
+        )
+
+        result = tx.run(query)
+        try:
+            return [{"n_infect": row["n_infect"]} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def city_most_infected(self):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._city_most_infected
+            )
+            if result:
+                print("{0} is the most infected city with {1} infected person/s".format(result[0]['c'], result[0]['num']))
+                return result[0]['c'], result[0]['num']
+
+    @staticmethod
+    def _city_most_infected(tx):
+        query = (
+            "MATCH (c:City)-[r]->(p:Person) - [] -> (:Strain) "
+            "RETURN c, count(DISTINCT r) AS num "
+            "ORDER BY num DESC LIMIT 1 "
+        )
+
+        result = tx.run(query)
+        try:
+            return [{"c": row["c"]["name"], "num": row["num"]} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def country_most_infected(self):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._country_most_infected
+            )
+            if result:
+                print("{0} is the most infected country with {1} infected person/s".format(result[0]['c'], result[0]['num']))
+                return result[0]['c'], result[0]['num']
+
+    @staticmethod
+    def _country_most_infected(tx):
+        query = (
+            "MATCH (c:Country) - [] ->(:City) - [r] -> (p:Person) - [] -> (:Strain) "
+            "RETURN c, count(DISTINCT r) AS num "
+            "ORDER BY num DESC LIMIT 1 "
+        )
+
+        result = tx.run(query)
+        try:
+            return [{"c": row["c"]["name"], "num": row["num"]} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
