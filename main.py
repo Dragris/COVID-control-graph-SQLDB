@@ -191,6 +191,14 @@ def country_least_vaccinated(app, conn):
     return country_name, num_vaccinated
 
 
+def person_jumps_to_virus(app, pid):
+    return app.person_distance_to_virus(pid)
+
+
+def person_in_contact(app, pid):
+    return app.person_contact_to_virus(pid)
+
+
 def populator(app, conn):
     # CLEAR DB
     print('Clearing DB')
@@ -334,6 +342,15 @@ def populator(app, conn):
     # COUNTRY WITH THE LEAST VACCINATED PERSONS
     print('\nQuery: Country with the least vaccinated persons')
     country_least_vaccinated(app, conn)
+
+    # HOW MANY JUMPS THERE ARE UNTIL INFECTED CONTACT?
+    print('\nQuery: How many jumps there are until infected contact?')
+    person_jumps_to_virus(app, 6)
+
+    # IS A PERSON IN CONTACT WITH THE VIRUS?
+    print('\nQuery: Is a person in contact with the virus?')
+    person_in_contact(app, 1)
+    person_in_contact(app, 2)
 
 
 if __name__ == "__main__":

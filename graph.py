@@ -798,3 +798,58 @@ class App:
             logging.error("{query} raised an error: \n {exception}".format(
                 query=query, exception=exception))
             raise
+
+
+    def person_distance_to_virus(self, person_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._person_distance_to_virus, person_id
+            )
+            jumps = np.Inf if result[0]['jtv'] is None else result[0]['jtv']
+            print("{0} is at {1} jumps from the virus".format(result[0]['p'], jumps))
+            return jumps
+
+    @staticmethod
+    def _person_distance_to_virus(tx, person_id):
+        query = (
+            "MATCH (p1:Person {person_id: $person_id}) "
+            "MATCH (p2:Person) - [] -> (:Strain) "
+            "RETURN min(length(shortestPath((p1) - [*..15] -> (p2)))) as jumps_to_virus, p1 "
+        )
+        result = tx.run(query, person_id=person_id)
+        try:
+            return [{"jtv": row["jumps_to_virus"], "p": row['p1']['name']} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def person_contact_to_virus(self, person_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._person_contact_to_virus, person_id
+            )
+            if result:
+                print("{0} is in contact with the virus".format(result[0]['p1']))
+                return True
+            else:
+                print("PERSON with ID: {0} is either not in contact with the virus or infected".format(person_id))
+                return False
+
+    @staticmethod
+    def _person_contact_to_virus(tx, person_id):
+        query = (
+            "MATCH (p1:Person {person_id: $person_id}) - [] -> (p2:Person) - [] -> (:Strain) "
+            "RETURN DISTINCT p2, p1 "
+        )
+        result = tx.run(query, person_id=person_id)
+        try:
+            return [{"p1": row["p1"]["name"], "p2": row['p2']['name']} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    """
+    
+"""
