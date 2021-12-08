@@ -74,12 +74,21 @@ def is_person_infected(app, conn, pid):
 def which_strain(app, conn, pid):
     return app.which_strain(pid)
 
+
 def is_person_vaccinated(app, conn, pid):
     return app.is_person_vaccinated(pid)
 
 
 def which_vaccine(app, conn, pid):
     return app.which_vaccine(pid)
+
+
+def has_city_infected(app, conn, cid):
+    return app.has_city_infected(cid)
+
+
+def has_city_vaccinated(app, conn, cid):
+    return app.has_city_vaccinated(cid)
 
 
 def populator(app, conn):
@@ -173,6 +182,15 @@ def populator(app, conn):
     print('\nQuery: With what vaccine/s is a person vaccinated?')
     which_vaccine(app, conn, 2)
 
+    # HAS A CITY ANY INFECTED PERSON? HOW MANY?
+    print('\nQuery: How many infected persons are in a city?')
+    has_city_infected(app, conn, 1)
+    has_city_infected(app, conn, 2)
+
+    # HAS A CITY ANY VACCINATED PERSON? HOW MANY?
+    print('\nQuery: How many infected persons are in a city?')
+    has_city_vaccinated(app, conn, 1)
+    has_city_vaccinated(app, conn, 2)
 
 
 if __name__ == "__main__":

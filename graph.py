@@ -438,3 +438,59 @@ class App:
                 query=query, exception=exception))
             raise
 
+    def has_city_infected(self, city_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._has_city_infected, city_id
+            )
+            if result:
+                print("{0} has {1} infected person/s".format(result[0]['c'], result[0]['n_infected']))
+                return True, result[0]['n_infected']
+            else:
+                print("CITY with ID: {0} has no infected person".format(city_id))
+                return False, 0
+
+    @staticmethod
+    def _has_city_infected(tx, city_id):
+        query = (
+            "MATCH (c:City {city_id: $city_id}) "
+            "MATCH (c) - [] -> (p:Person) - [] -> (:Strain) "
+            "RETURN count(DISTINCT p) as n_infected, c "
+        )
+
+        result = tx.run(query, city_id=city_id)
+        try:
+            return [{"n_infected": row["n_infected"], 'c': row['c']['name']} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
+    def has_city_vaccinated(self, city_id):
+        with self.driver.session() as session:
+            result = session.write_transaction(
+                self._has_city_vaccinated, city_id
+            )
+            if result:
+                print("{0} has {1} vaccinated person/s".format(result[0]['c'], result[0]['n_vaccines']))
+                return True, result[0]['n_vaccines']
+            else:
+                print("CITY with ID: {0} has no vaccinated person".format(city_id))
+                return False, 0
+
+    @staticmethod
+    def _has_city_vaccinated(tx, city_id):
+        query = (
+            "MATCH (c:City {city_id: $city_id}) "
+            "MATCH (c) - [] -> (p:Person) - [] -> (:Vaccine) "
+            "RETURN count(DISTINCT p) as n_vaccines, c "
+        )
+
+        result = tx.run(query, city_id=city_id)
+        try:
+            return [{"n_vaccines": row["n_vaccines"], "c": row["c"]["name"]} for row in result]
+        except ServiceUnavailable as exception:
+            logging.error("{query} raised an error: \n {exception}".format(
+                query=query, exception=exception))
+            raise
+
