@@ -157,37 +157,37 @@ def country_most_infected(app, conn):
 
 def city_most_vaccinated(app, conn):
     city_name, num_vaccinated = app.city_most_vaccinated()
-    # TODO: ADD to SQL stats
+    mysql.most_vaccinated_city(conn, city_name, num_vaccinated)
     return city_name, num_vaccinated
 
 
 def country_most_vaccinated(app, conn):
     country_name, num_vaccinated = app.country_most_vaccinated()
-    # TODO: ADD to SQL stats
+    mysql.most_vaccinated_country(conn, country_name, num_vaccinated)
     return country_name, num_vaccinated
 
 
 def city_least_infected(app, conn):
     city_name, num_infected = app.city_least_infected()
-    # TODO: ADD to SQL stats
+    mysql.least_infected_city(conn, city_name, num_infected)
     return city_name, num_infected
 
 
 def country_least_infected(app, conn):
     country_name, num_infected = app.country_least_infected()
-    # TODO: ADD to SQL stats
+    mysql.least_infected_country(conn, country_name, num_infected)
     return country_name, num_infected
 
 
 def city_least_vaccinated(app, conn):
     city_name, num_vaccinated = app.city_least_vaccinated()
-    # TODO: ADD to SQL stats
+    mysql.least_vaccinated_city(conn, city_name, num_vaccinated)
     return city_name, num_vaccinated
 
 
 def country_least_vaccinated(app, conn):
     country_name, num_vaccinated = app.country_least_vaccinated()
-    # TODO: ADD to SQL stats
+    mysql.least_vaccinated_country(conn, country_name, num_vaccinated)
     return country_name, num_vaccinated
 
 

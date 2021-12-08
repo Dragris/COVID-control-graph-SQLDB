@@ -171,3 +171,87 @@ def most_infected_country(conn, country_name, num_infected):
         conn.commit()
     except:
         conn.rollback()
+
+
+def most_vaccinated_city(conn, city_name, num_vaccinated):
+    try:
+        cur = conn.cursor()
+        # Process output
+        str_val = "City: " + city_name + "\nNumber of vaccinated people: " + str(num_vaccinated)
+
+        sql = "INSERT INTO stats VALUES (%s, %s, %s, %s)"
+        val = (None, "mostVaccinatedCity", str_val, datetime.now())
+        cur.execute(sql, val)
+        conn.commit()
+    except:
+        conn.rollback()
+
+
+def most_vaccinated_country(conn, country_name, num_vaccinated):
+    try:
+        cur = conn.cursor()
+        # Process output
+        str_val = "Country: " + country_name + "\nNumber of vaccinated people: " + str(num_vaccinated)
+
+        sql = "INSERT INTO stats VALUES (%s, %s, %s, %s)"
+        val = (None, "mostVaccinatedCountry", str_val, datetime.now())
+        cur.execute(sql, val)
+        conn.commit()
+    except:
+        conn.rollback()
+
+
+def least_infected_city(conn, city_name, num_vaccinated):
+    try:
+        cur = conn.cursor()
+        # Process output
+        str_val = "City: " + city_name + "\nNumber of infected people: " + str(num_vaccinated)
+
+        sql = "INSERT INTO stats VALUES (%s, %s, %s, %s)"
+        val = (None, "leastInfectedCity", str_val, datetime.now())
+        cur.execute(sql, val)
+        conn.commit()
+    except:
+        conn.rollback()
+
+
+def least_infected_country(conn, country_name, num_vaccinated):
+    try:
+        cur = conn.cursor()
+        # Process output
+        str_val = "Country: " + country_name + "\nNumber of infected people: " + str(num_vaccinated)
+
+        sql = "INSERT INTO stats VALUES (%s, %s, %s, %s)"
+        val = (None, "leastInfectedCountry", str_val, datetime.now())
+        cur.execute(sql, val)
+        conn.commit()
+    except:
+        conn.rollback()
+
+
+def least_vaccinated_city(conn, city_name, num_vaccinated):
+    try:
+        cur = conn.cursor()
+        # Process output
+        str_val = "City: " + city_name + "\nNumber of vaccinated people: " + str(num_vaccinated)
+
+        sql = "INSERT INTO stats VALUES (%s, %s, %s, %s)"
+        val = (None, "leastVaccinatedCity", str_val, datetime.now())
+        cur.execute(sql, val)
+        conn.commit()
+    except:
+        conn.rollback()
+
+
+def least_vaccinated_country(conn, country_name, num_vaccinated):
+    try:
+        cur = conn.cursor()
+        # Process output
+        str_val = "Country: " + country_name + "\nNumber of vaccinated people: " + str(num_vaccinated)
+
+        sql = "INSERT INTO stats VALUES (%s, %s, %s, %s)"
+        val = (None, "leastVaccinatedCountry", str_val, datetime.now())
+        cur.execute(sql, val)
+        conn.commit()
+    except:
+        conn.rollback()
