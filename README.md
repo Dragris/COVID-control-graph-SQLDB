@@ -42,6 +42,6 @@ The different types of Non-SQL databases were assigned randomly, we got Graph DB
 ## Acknowledgments
 
 * [daload](https://github.com/daload)
-
+* [Dragris](https://github.com/Dragris)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
