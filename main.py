@@ -74,8 +74,13 @@ def add_vaccine(app, conn, name, data):
 
 
 def delete_person(app, conn, pid):
-    app.delete_person(pid)
-    mysql.delete_person(conn, pid)
+    try:
+        app.delete_person(pid)
+        mysql.delete_person(conn, pid)
+        conn.commit()
+    except:
+        conn.rollback()
+        return
 
 
 def add_city_person_rel(app, cid, pid):
@@ -128,25 +133,25 @@ def has_city_vaccinated(app, cid):
 
 def total_vaccinated(app, conn):
     n_vac = app.total_vaccinated()
-    # TODO: Add to SQL stats
+    mysql.total_vaccinated(conn, n_vac)
     return n_vac
 
 
 def total_infected(app, conn):
     n_inf = app.total_infected()
-    # TODO: Add to SQL stats
+    mysql.total_infected(conn, n_inf)
     return n_inf
 
 
 def city_most_infected(app, conn):
     city_name, num_infected = app.city_most_infected()
-    # TODO: ADD to SQL stats
+    mysql.most_infected_city(conn, city_name, num_infected)
     return city_name, num_infected
 
 
 def country_most_infected(app, conn):
     country_name, num_infected = app.country_most_infected()
-    # TODO: ADD to SQL stats
+    mysql.most_infected_country(conn, country_name, num_infected)
     return country_name, num_infected
 
 

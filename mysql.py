@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 def delete_all(conn):
     cur = conn.cursor()
     try:
@@ -109,6 +112,7 @@ def add_vaccine(conn, name, data):
 
     return vid
 
+
 def delete_person(conn, pid):
     try:
         cur = conn.cursor()
@@ -116,7 +120,54 @@ def delete_person(conn, pid):
         val = (pid,)  # Remember to put comma after only one val as it needs to be iterable
         cur.execute(sql, val)
     except:
-        conn.rollback()
         raise
 
-    conn.commit()
+
+def total_vaccinated(conn, n_vac):
+    try:
+        cur = conn.cursor()
+        sql = "INSERT INTO stats VALUES (%s, %s, %s, %s)"
+        val = (None, "totalVaccinated", n_vac, datetime.now())
+        cur.execute(sql, val)
+        conn.commit()
+    except:
+        conn.rollback()
+
+
+def total_infected(conn, n_inf):
+    try:
+        cur = conn.cursor()
+        sql = "INSERT INTO stats VALUES (%s, %s, %s, %s)"
+        val = (None, "totalInfected", n_inf, datetime.now())
+        cur.execute(sql, val)
+        conn.commit()
+    except:
+        conn.rollback()
+
+
+def most_infected_city(conn, city_name, num_infected):
+    try:
+        cur = conn.cursor()
+        # Process output
+        str_val = "City: " + city_name + "\nNumber of infected people: " + str(num_infected)
+
+        sql = "INSERT INTO stats VALUES (%s, %s, %s, %s)"
+        val = (None, "mostInfectedCity", str_val, datetime.now())
+        cur.execute(sql, val)
+        conn.commit()
+    except:
+        conn.rollback()
+
+
+def most_infected_country(conn, country_name, num_infected):
+    try:
+        cur = conn.cursor()
+        # Process output
+        str_val = "Country: " + country_name + "\nNumber of infected people: " + str(num_infected)
+
+        sql = "INSERT INTO stats VALUES (%s, %s, %s, %s)"
+        val = (None, "mostInfectedCountry", str_val, datetime.now())
+        cur.execute(sql, val)
+        conn.commit()
+    except:
+        conn.rollback()
