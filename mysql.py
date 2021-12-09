@@ -255,3 +255,12 @@ def least_vaccinated_country(conn, country_name, num_vaccinated):
         conn.commit()
     except:
         conn.rollback()
+
+
+def get_person(conn, pid):
+    cur = conn.cursor()
+    sql = "SELECT * FROM person WHERE pid = %s"
+    val = (pid,)
+    cur.execute(sql, val)
+    myresult = cur.fetchall()
+    return myresult[0]

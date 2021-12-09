@@ -199,6 +199,12 @@ def person_in_contact(app, pid):
     return app.person_contact_to_virus(pid)
 
 
+def get_person(conn, pid):
+    data = mysql.get_person(conn, pid)
+    string = "Name: " + data[1] + "\nSurname: " + data[2] + "\nPID: " + data[3] + "\nSex: " + data[4] + "\nDate of birth: " + str(data[5])
+    return string
+
+
 def populator(app, conn):
     # CLEAR DB
     print('Clearing DB')
@@ -216,7 +222,7 @@ def populator(app, conn):
     # CREATE PERSONS
     print('\nCreating persons')
     add_person(app, conn, '1', "David", "Lopez")
-    add_person(app, conn, '2', "Alberto", "Barragan")
+    add_person(app, conn, '2', "Alberto", "Barragan", sex="V")
     add_person(app, conn, '3', "Samuel", "Calabria")
     add_person(app, conn, '4', "Eric", "Duque")
     add_person(app, conn, '5', "Jerónimo", "Hernandez")
@@ -352,6 +358,7 @@ def populator(app, conn):
     person_in_contact(app, 1)
     person_in_contact(app, 2)
 
+    print(get_person(conn, 2))
 
 if __name__ == "__main__":
     # Aura queries use an encrypted connection using the "neo4j+s" URI scheme
