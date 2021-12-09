@@ -3,6 +3,7 @@ import logging
 from neo4j.exceptions import ServiceUnavailable
 import numpy as np
 
+
 class App:
 
     def __init__(self, uri, user, password):
@@ -174,7 +175,9 @@ class App:
             result = session.write_transaction(
                 self._change_person_city, person_id, new_city_id
             )
-            print("Modified relation {0} IS RESIDED BY {1} to {2} IS RESIDED BY {1}".format(result[0]['c1'], result[0]['p'], result[0]['c2']))
+            print("Modified relation {0} IS RESIDED BY {1} to {2} IS RESIDED BY {1}".format(result[0]['c1'],
+                                                                                            result[0]['p'],
+                                                                                            result[0]['c2']))
 
     @staticmethod
     def _change_person_city(tx, person_id, new_city_id):
@@ -549,7 +552,8 @@ class App:
                 self._city_most_infected
             )
             if result:
-                print("{0} is the most infected city with {1} infected person/s".format(result[0]['c'], result[0]['num']))
+                print(
+                    "{0} is the most infected city with {1} infected person/s".format(result[0]['c'], result[0]['num']))
                 return result[0]['c'], result[0]['num']
 
     @staticmethod
@@ -574,7 +578,8 @@ class App:
                 self._country_most_infected
             )
             if result:
-                print("{0} is the most infected country with {1} infected person/s".format(result[0]['c'], result[0]['num']))
+                print("{0} is the most infected country with {1} infected person/s".format(result[0]['c'],
+                                                                                           result[0]['num']))
                 return result[0]['c'], result[0]['num']
 
     @staticmethod
@@ -599,7 +604,8 @@ class App:
                 self._city_most_vaccinated
             )
             if result:
-                print("{0} is the most vaccinated city with {1} vaccinated person/s".format(result[0]['c'], result[0]['num']))
+                print("{0} is the most vaccinated city with {1} vaccinated person/s".format(result[0]['c'],
+                                                                                            result[0]['num']))
                 return result[0]['c'], result[0]['num']
 
     @staticmethod
@@ -624,7 +630,8 @@ class App:
                 self._country_most_vaccinated
             )
             if result:
-                print("{0} is the most vaccinated country with {1} vaccinated person/s".format(result[0]['c'], result[0]['num']))
+                print("{0} is the most vaccinated country with {1} vaccinated person/s".format(result[0]['c'],
+                                                                                               result[0]['num']))
                 return result[0]['c'], result[0]['num']
 
     @staticmethod
@@ -651,7 +658,7 @@ class App:
             if result:
                 infected_cities = result[0]['ic']
                 city_list = result[0]['city_list']
-                nums =  result[0]['nums']
+                nums = result[0]['nums']
                 tmp = (None, np.Inf)
                 if len(infected_cities) == len(city_list):
                     for city_id in range(len(infected_cities)):
@@ -690,7 +697,7 @@ class App:
             if result:
                 infected_countries = result[0]['ic']
                 country_list = result[0]['country_list']
-                nums =  result[0]['nums']
+                nums = result[0]['nums']
                 tmp = (None, np.Inf)
                 if len(infected_countries) == len(country_list):
                     for country_id in range(len(infected_countries)):
@@ -715,7 +722,8 @@ class App:
 
         result = tx.run(query)
         try:
-            return [{"ic": row["infected_list"], "nums": row["nums"], "country_list": row["country_list"]} for row in result]
+            return [{"ic": row["infected_list"], "nums": row["nums"], "country_list": row["country_list"]} for row in
+                    result]
         except ServiceUnavailable as exception:
             logging.error("{query} raised an error: \n {exception}".format(
                 query=query, exception=exception))
@@ -729,7 +737,7 @@ class App:
             if result:
                 vaccinated_cities = result[0]['vc']
                 city_list = result[0]['city_list']
-                nums =  result[0]['nums']
+                nums = result[0]['nums']
                 tmp = (None, np.Inf)
                 if len(vaccinated_cities) == len(city_list):
                     for city_id in range(len(vaccinated_cities)):
@@ -754,7 +762,8 @@ class App:
 
         result = tx.run(query)
         try:
-            return [{"vc": row["vaccinated_list"], "nums": row["nums"], "city_list": row["city_list"]} for row in result]
+            return [{"vc": row["vaccinated_list"], "nums": row["nums"], "city_list": row["city_list"]} for row in
+                    result]
         except ServiceUnavailable as exception:
             logging.error("{query} raised an error: \n {exception}".format(
                 query=query, exception=exception))
@@ -768,7 +777,7 @@ class App:
             if result:
                 vaccinated_countries = result[0]['vc']
                 country_list = result[0]['country_list']
-                nums =  result[0]['nums']
+                nums = result[0]['nums']
                 tmp = (None, np.Inf)
                 if len(vaccinated_countries) == len(country_list):
                     for country_id in range(len(vaccinated_countries)):
@@ -793,12 +802,12 @@ class App:
 
         result = tx.run(query)
         try:
-            return [{"vc": row["vaccinated_list"], "nums": row["nums"], "country_list": row["country_list"]} for row in result]
+            return [{"vc": row["vaccinated_list"], "nums": row["nums"], "country_list": row["country_list"]} for row in
+                    result]
         except ServiceUnavailable as exception:
             logging.error("{query} raised an error: \n {exception}".format(
                 query=query, exception=exception))
             raise
-
 
     def person_distance_to_virus(self, person_id):
         with self.driver.session() as session:

@@ -205,7 +205,7 @@ def get_person(conn, pid):
     return string
 
 
-def populator(app, conn):
+def tester(app, conn):
     # CLEAR DB
     print('Clearing DB')
     clear_db(app, conn)
@@ -360,12 +360,13 @@ def populator(app, conn):
 
     print(get_person(conn, 2))
 
+
 if __name__ == "__main__":
     # Aura queries use an encrypted connection using the "neo4j+s" URI scheme
     conn = MySQLdb.connect(host=consts.HOST, user=consts.SQL_USER, passwd=consts.SQL_PASS, db=consts.DB)
     app = App(consts.URI, consts.GRAPH_USER, consts.GRAPH_PASS)
 
-    populator(app, conn)
+    tester(app, conn)
 
     app.close()
     conn.close()
