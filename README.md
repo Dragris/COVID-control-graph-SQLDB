@@ -6,7 +6,7 @@
 <h3 align="center">UB ADB 2021 P3</h3>
 
 <p align="center">
-    University of Barcelona 2021 ADB 3nd practical delivery
+    University of Barcelona 2021 ADB 3rd practical delivery
 </div>
 
 
